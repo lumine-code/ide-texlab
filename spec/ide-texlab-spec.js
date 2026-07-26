@@ -18,7 +18,7 @@ describe("ide-texlab server resolution", () => {
 describe("ide-texlab adapter", () => {
   it("registers with the language-server service", () => {
     let adapter;
-    const disposable = main.consumeLanguageServer({
+    const disposable = main.consumeIdeClient({
       registerAdapter(registered) {
         adapter = registered;
         return { dispose() {} };

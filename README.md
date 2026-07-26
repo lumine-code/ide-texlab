@@ -16,7 +16,7 @@ To install `ide-texlab` search for _ide-texlab_ in the Install pane of the Lumin
 
 ## Services
 
-- **lumine.languageServer** (`^1.0.0`): consumed to register the Texlab adapter with the editor's language-server client.
+- **ide-client** (`^1.0.0`): consumed to register the Texlab adapter with the editor's language-server client.
 
 ## Contributing
 
