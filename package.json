@@ -1,0 +1,51 @@
+{
+  "name": "ide-texlab",
+  "author": "lumine-code",
+  "description": "Texlab language-server adapter for LaTeX.",
+  "repository": "https://github.com/lumine-code/ide-texlab",
+  "bugs": {
+    "url": "https://github.com/lumine-code/ide-texlab/issues"
+  },
+  "keywords": [
+    "language-server",
+    "lsp",
+    "latex",
+    "bibtex",
+    "typesetting"
+  ],
+  "version": "1.0.0",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.100.0 <2.0.0"
+  },
+  "main": "./lib/main",
+  "scripts": {
+    "test": "cd ../lumine && npm run test:only -- ../ide-texlab/spec",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "consumedServices": {
+    "lumine.languageServer": {
+      "versions": {
+        "^1.0.0": "consumeLanguageServer"
+      }
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.2.2",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.6"
+  },
+  "configSchema": {
+    "serverPath": {
+      "title": "Server Path",
+      "description": "Absolute path to a `texlab` executable. Leave empty to look it up on PATH.",
+      "type": "string",
+      "default": ""
+    }
+  }
+}
