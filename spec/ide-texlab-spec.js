@@ -93,6 +93,21 @@ describe("ide-texlab adapter", () => {
     expect(adapter.getWorkspaceConfiguration("texlab").formatterLineLength).toBeUndefined();
   });
 
+  it("drops a pattern that will not compile", () => {
+    // Texlab unwraps the parse of the configuration it pulled, so one bad
+    // pattern takes down the thread that read it — silently, leaving every
+    // filter apparently ignored.
+    spyOn(atom.notifications, "addWarning");
+    atom.config.set("ide-texlab.symbols.ignoredPatterns", ["^ok$", "(unbalanced"]);
+
+    const options = adapter.getWorkspaceConfiguration("texlab");
+    expect(options.symbols.ignoredPatterns).toEqual(["^ok$"]);
+    expect(atom.notifications.addWarning).toHaveBeenCalled();
+    expect(atom.notifications.addWarning.calls.mostRecent().args[0]).toContain(
+      "ide-texlab.symbols.ignoredPatterns",
+    );
+  });
+
   it("offers a switch only for what Texlab advertises", () => {
     // Read from the server's own capability declaration: Texlab has no
     // signature help, code actions, code lens or semantic tokens, so a switch
