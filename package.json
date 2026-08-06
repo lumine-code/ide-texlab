@@ -50,6 +50,448 @@
       "description": "Absolute path to a `texlab` executable. Leave empty to look it up on PATH.",
       "type": "string",
       "default": ""
+    },
+    "features": {
+      "title": "Features",
+      "description": "Which parts of Texlab the editor uses. Turning one off hands it to the next server serving the same file. Only what Texlab implements is listed: it has no signature help, code actions, code lens or semantic tokens.",
+      "type": "object",
+      "properties": {
+        "diagnostics": {
+          "title": "Diagnostics",
+          "description": "Report the build log and ChkTeX findings in the linter.",
+          "type": "boolean",
+          "default": true
+        },
+        "autocomplete": {
+          "title": "Autocomplete",
+          "description": "Offer commands, environments, citations and labels while typing.",
+          "type": "boolean",
+          "default": true
+        },
+        "hover": {
+          "title": "Hover",
+          "description": "Show package documentation, citations and label targets on hover.",
+          "type": "boolean",
+          "default": true
+        },
+        "definition": {
+          "title": "Go To Definition",
+          "description": "Jump from a citation or reference to what it points at.",
+          "type": "boolean",
+          "default": true
+        },
+        "references": {
+          "title": "Find References",
+          "description": "List the uses of a label, citation key or command.",
+          "type": "boolean",
+          "default": true
+        },
+        "symbols": {
+          "title": "Symbols",
+          "description": "Serve document and project symbols to go-to-symbol.",
+          "type": "boolean",
+          "default": true
+        },
+        "outline": {
+          "title": "Outline",
+          "description": "Fill the outline panel with the document's sections and environments.",
+          "type": "boolean",
+          "default": true
+        },
+        "format": {
+          "title": "Format",
+          "description": "Format documents with the formatter chosen below.",
+          "type": "boolean",
+          "default": true
+        },
+        "rename": {
+          "title": "Rename",
+          "description": "Rename a label or citation key across the project.",
+          "type": "boolean",
+          "default": true
+        },
+        "inlayHints": {
+          "title": "Inlay Hints",
+          "description": "Show what a label points at, inline beside it.",
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "build": {
+      "title": "Build",
+      "description": "Texlab can compile the document itself. It is off by default because the `latex-tools` package already does, and both on means every save compiles twice.",
+      "type": "object",
+      "properties": {
+        "onSave": {
+          "title": "Build On Save",
+          "description": "Compile the document every time it is saved.",
+          "type": "boolean",
+          "default": false
+        },
+        "executable": {
+          "title": "Build Executable",
+          "description": "The build program to run.",
+          "type": "string",
+          "default": "latexmk"
+        },
+        "args": {
+          "title": "Build Arguments",
+          "description": "Arguments passed to the build program. `%f` is the file being compiled, and the placeholders `%d`, `%e` and `%b` are its directory, extension and base name.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "-pdf",
+            "-interaction=nonstopmode",
+            "-synctex=1",
+            "%f"
+          ]
+        },
+        "forwardSearchAfter": {
+          "title": "Forward Search After Build",
+          "description": "Jump the viewer to the cursor once a build finishes.",
+          "type": "boolean",
+          "default": false
+        },
+        "auxDirectory": {
+          "title": "Auxiliary Directory",
+          "description": "Where the build writes its auxiliary files, relative to the root document.",
+          "type": "string",
+          "default": "."
+        },
+        "logDirectory": {
+          "title": "Log Directory",
+          "description": "Where the build writes its log, relative to the root document.",
+          "type": "string",
+          "default": "."
+        },
+        "pdfDirectory": {
+          "title": "PDF Directory",
+          "description": "Where the build writes its PDF, relative to the root document.",
+          "type": "string",
+          "default": "."
+        },
+        "filename": {
+          "title": "Output Filename",
+          "description": "Name of the built PDF. Leave empty to take it from the root document.",
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "forwardSearch": {
+      "title": "Forward Search",
+      "description": "The PDF viewer Texlab tells to jump to the cursor's position. Leave the executable empty to use the `latex-tools` viewer instead.",
+      "type": "object",
+      "properties": {
+        "executable": {
+          "title": "Viewer Executable",
+          "description": "The viewer to run.",
+          "type": "string",
+          "default": ""
+        },
+        "args": {
+          "title": "Viewer Arguments",
+          "description": "Arguments passed to the viewer. `%f` is the root document, `%p` the built PDF, and `%l` the current line.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "chktex": {
+      "title": "ChkTeX",
+      "description": "Texlab can run ChkTeX for style and consistency warnings on top of the build log. The `chktex` binary comes with TeX Live and MiKTeX.",
+      "type": "object",
+      "properties": {
+        "onOpenAndSave": {
+          "title": "Run On Open And Save",
+          "description": "Run ChkTeX when a document is opened and when it is saved.",
+          "type": "boolean",
+          "default": false
+        },
+        "onEdit": {
+          "title": "Run On Edit",
+          "description": "Run ChkTeX as you type, rather than only on open and save.",
+          "type": "boolean",
+          "default": false
+        },
+        "additionalArgs": {
+          "title": "Additional Arguments",
+          "description": "Extra arguments passed to `chktex`, such as `-n` to silence a warning.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "latexFormatter": {
+      "title": "LaTeX Formatter",
+      "description": "Which formatter formats `.tex` documents. `latexindent` and `tex-fmt` are separate programs that must be on your PATH.",
+      "type": "string",
+      "enum": [
+        "none",
+        "texlab",
+        "latexindent",
+        "tex-fmt"
+      ],
+      "default": "latexindent"
+    },
+    "bibtexFormatter": {
+      "title": "BibTeX Formatter",
+      "description": "Which formatter formats `.bib` files.",
+      "type": "string",
+      "enum": [
+        "none",
+        "texlab",
+        "latexindent",
+        "tex-fmt"
+      ],
+      "default": "texlab"
+    },
+    "formatterLineLength": {
+      "title": "Formatter Line Length",
+      "description": "Column the formatter wraps at. Set to 0 to leave lines unwrapped.",
+      "type": "integer",
+      "minimum": 0,
+      "default": 80
+    },
+    "latexindent": {
+      "title": "latexindent",
+      "description": "Options passed to `latexindent` when it is the chosen formatter.",
+      "type": "object",
+      "properties": {
+        "local": {
+          "title": "Local Settings File",
+          "description": "A `latexindent` YAML file to load in addition to the defaults, relative to the file being formatted.",
+          "type": "string",
+          "default": ""
+        },
+        "modifyLineBreaks": {
+          "title": "Modify Line Breaks",
+          "description": "Let latexindent add and remove line breaks, not just indentation.",
+          "type": "boolean",
+          "default": false
+        },
+        "replacement": {
+          "title": "Replacement Flag",
+          "description": "The replacement mode flag to pass, one of `-r`, `-rv` or `-rr`. Leave empty for none.",
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "diagnosticsDelay": {
+      "title": "Diagnostics Delay",
+      "description": "Milliseconds of quiet before diagnostics are recomputed.",
+      "type": "integer",
+      "minimum": 0,
+      "default": 300
+    },
+    "diagnostics": {
+      "title": "Diagnostics",
+      "description": "Which build and ChkTeX messages reach the linter. The patterns are regular expressions matched against the message text; an allow list, when it is not empty, is applied first.",
+      "type": "object",
+      "properties": {
+        "allowedPatterns": {
+          "title": "Allowed Patterns",
+          "description": "Report only the messages matching one of these.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "ignoredPatterns": {
+          "title": "Ignored Patterns",
+          "description": "Never report a message matching one of these.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "symbols": {
+      "title": "Symbols",
+      "description": "Which symbols reach the outline and go-to-symbol. The patterns are regular expressions matched against the symbol name.",
+      "type": "object",
+      "properties": {
+        "allowedPatterns": {
+          "title": "Allowed Patterns",
+          "description": "Serve only the symbols matching one of these.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "ignoredPatterns": {
+          "title": "Ignored Patterns",
+          "description": "Never serve a symbol matching one of these.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "inlayHints": {
+      "title": "Inlay Hints",
+      "description": "The labels Texlab renders inline. The editor's own Inlay Hints setting has to be on as well.",
+      "type": "object",
+      "properties": {
+        "labelDefinitions": {
+          "title": "Label Definitions",
+          "description": "Show what a \\label names, beside its definition.",
+          "type": "boolean",
+          "default": true
+        },
+        "labelReferences": {
+          "title": "Label References",
+          "description": "Show what a \\ref resolves to, beside the reference.",
+          "type": "boolean",
+          "default": true
+        },
+        "maxLength": {
+          "title": "Maximum Length",
+          "description": "Longer hints are truncated. Set to 0 for no limit.",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        }
+      }
+    },
+    "completion": {
+      "title": "Completion",
+      "description": "How completion candidates are matched.",
+      "type": "object",
+      "properties": {
+        "matcher": {
+          "title": "Matcher",
+          "description": "How what you have typed is matched against the candidates. Fuzzy matching finds a candidate from any subsequence of its letters; prefix matching only from its start.",
+          "type": "string",
+          "enum": [
+            "fuzzy",
+            "fuzzy-ignore-case",
+            "prefix",
+            "prefix-ignore-case"
+          ],
+          "default": "fuzzy-ignore-case"
+        }
+      }
+    },
+    "hover": {
+      "title": "Hover",
+      "description": "What a hover shows for a mathematical symbol.",
+      "type": "object",
+      "properties": {
+        "symbols": {
+          "title": "Symbol Rendering",
+          "description": "How a symbol command is shown on hover.",
+          "type": "string",
+          "enum": [
+            "none",
+            "glyph",
+            "image"
+          ],
+          "default": "image"
+        }
+      }
+    },
+    "experimental": {
+      "title": "Experimental",
+      "description": "Commands and environments Texlab does not know, so that it treats yours the way it treats the standard ones. Each list adds to the built-in set rather than replacing it.",
+      "type": "object",
+      "collapsed": true,
+      "properties": {
+        "followPackageLinks": {
+          "title": "Follow Package Links",
+          "description": "Analyze the .sty and .cls files the document loads, not just the document itself.",
+          "type": "boolean",
+          "default": false
+        },
+        "mathEnvironments": {
+          "title": "Math Environments",
+          "description": "Environment names to treat as mathematics.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "enumEnvironments": {
+          "title": "Enumeration Environments",
+          "description": "Environment names to treat as enumerations.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "verbatimEnvironments": {
+          "title": "Verbatim Environments",
+          "description": "Environment names whose contents are not LaTeX and must not be analyzed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "citationCommands": {
+          "title": "Citation Commands",
+          "description": "Command names that cite a BibTeX entry.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "glossaryReferenceCommands": {
+          "title": "Glossary Reference Commands",
+          "description": "Command names that reference a glossary entry.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "labelDefinitionCommands": {
+          "title": "Label Definition Commands",
+          "description": "Command names that define a label.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "labelReferenceCommands": {
+          "title": "Label Reference Commands",
+          "description": "Command names that reference a label.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "labelReferenceRangeCommands": {
+          "title": "Label Reference Range Commands",
+          "description": "Command names that reference a range of labels, taking a start and an end.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
     }
   }
 }

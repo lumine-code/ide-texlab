@@ -8,6 +8,11 @@ Registers the [texlab](https://github.com/latex-lsp/texlab) language server with
 
 - **PATH discovery**: finds `texlab` on your PATH, or uses the Server Path setting.
 - **LaTeX and BibTeX**: serves the LaTeX grammars (including Beamer and memoir) and BibTeX files.
+- **Formatting**: chooses between the built-in formatter, `latexindent` and `tex-fmt` for `.tex` and `.bib` separately, with the line length and latexindent's own options alongside.
+- **ChkTeX**: runs the style checker on open, on save, or as you type, with your own arguments.
+- **Building**: compiles with `latexmk` or another program and jumps a viewer to the cursor, off by default because the `latex-tools` package already does this.
+- **Custom macros**: teaches the server your own environments and citation, label, and glossary commands so it treats them like the standard ones.
+- **Feature switches**: any of the ten capabilities Texlab serves can be turned off, which hands it to another server on the same file.
 - **Project sessions**: one server per project root, started lazily with the first matching editor.
 
 ## Installation
