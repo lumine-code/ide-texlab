@@ -296,7 +296,7 @@
     },
     "diagnostics": {
       "title": "Diagnostics",
-      "description": "Which build and ChkTeX messages reach the linter. The patterns are regular expressions matched against the message text; an allow list, when it is not empty, is applied first.",
+      "description": "Which of Texlab's messages reach the linter — its own syntax errors as well as the build log and ChkTeX. The patterns are regular expressions matched against the message text; an allow list, when it is not empty, is applied first. A change takes effect the next time the document is analyzed.",
       "type": "object",
       "properties": {
         "allowedPatterns": {
