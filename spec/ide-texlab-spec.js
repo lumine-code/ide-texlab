@@ -35,12 +35,12 @@ describe("ide-texlab adapter", () => {
   beforeEach(async () => {
     // Applies the configSchema, so the defaults the adapter reads are the ones
     // the manifest declares rather than undefined.
-    await atom.packages.activatePackage("ide-texlab");
+    await lumine.packages.activatePackage("ide-texlab");
     ({ adapter, disposable } = registerAdapter());
   });
   afterEach(async () => {
     disposable.dispose();
-    await atom.packages.deactivatePackage("ide-texlab");
+    await lumine.packages.deactivatePackage("ide-texlab");
   });
 
   it("registers with the language-server service", () => {
@@ -54,9 +54,9 @@ describe("ide-texlab adapter", () => {
     // Texlab pulls `texlab` and parses the answer as its options directly, so
     // wrapping them would leave every setting at its default — which is what
     // reading a Lumine namespace called `texlab` used to do.
-    atom.config.set("ide-texlab.latexFormatter", "tex-fmt");
-    atom.config.set("ide-texlab.build.executable", "tectonic");
-    atom.config.set("ide-texlab.chktex.onEdit", true);
+    lumine.config.set("ide-texlab.latexFormatter", "tex-fmt");
+    lumine.config.set("ide-texlab.build.executable", "tectonic");
+    lumine.config.set("ide-texlab.chktex.onEdit", true);
 
     const options = adapter.getWorkspaceConfiguration("texlab");
     expect(options.latexFormatter).toBe("tex-fmt");
@@ -89,7 +89,7 @@ describe("ide-texlab adapter", () => {
     // Zero is how the settings page spells "no limit", which Texlab spells as
     // an absent value.
     expect(options.inlayHints.maxLength).toBeUndefined();
-    atom.config.set("ide-texlab.formatterLineLength", 0);
+    lumine.config.set("ide-texlab.formatterLineLength", 0);
     expect(adapter.getWorkspaceConfiguration("texlab").formatterLineLength).toBeUndefined();
   });
 
@@ -97,13 +97,13 @@ describe("ide-texlab adapter", () => {
     // Texlab unwraps the parse of the configuration it pulled, so one bad
     // pattern takes down the thread that read it — silently, leaving every
     // filter apparently ignored.
-    spyOn(atom.notifications, "addWarning");
-    atom.config.set("ide-texlab.symbols.ignoredPatterns", ["^ok$", "(unbalanced"]);
+    spyOn(lumine.notifications, "addWarning");
+    lumine.config.set("ide-texlab.symbols.ignoredPatterns", ["^ok$", "(unbalanced"]);
 
     const options = adapter.getWorkspaceConfiguration("texlab");
     expect(options.symbols.ignoredPatterns).toEqual(["^ok$"]);
-    expect(atom.notifications.addWarning).toHaveBeenCalled();
-    expect(atom.notifications.addWarning.calls.mostRecent().args[0]).toContain(
+    expect(lumine.notifications.addWarning).toHaveBeenCalled();
+    expect(lumine.notifications.addWarning.calls.mostRecent().args[0]).toContain(
       "ide-texlab.symbols.ignoredPatterns",
     );
   });
