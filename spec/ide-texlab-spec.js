@@ -1,5 +1,5 @@
 const path = require("path");
-const { resolveServer, findOnPath } = require("../lib/server");
+const { resolveServer, findOnPath, assetFor, managedServer } = require("../lib/server");
 const main = require("../lib/main");
 
 const registerAdapter = () => {
@@ -25,6 +25,25 @@ describe("ide-texlab server resolution", () => {
     const name = path.basename(process.execPath, path.extname(process.execPath));
     expect(findOnPath(name, { PATH: dir, PATHEXT: ".EXE" })).toBeTruthy();
     expect(findOnPath("definitely-not-a-real-binary", { PATH: dir })).toBeNull();
+  });
+  it("prefers a managed install over PATH, and the configured path over both", async () => {
+    const managed = { binaryPath: "/managed/texlab", version: "5.26.0" };
+    const launch = await resolveServer("", managed);
+    expect(launch.command).toBe("/managed/texlab");
+    expect(launch.version).toBe("5.26.0");
+    expect((await resolveServer(process.execPath, managed)).command).toBe(process.execPath);
+  });
+  it("names the exact release asset for each platform it supports", () => {
+    // Texlab names assets by architecture and system, not by Rust target.
+    expect(assetFor({ platform: "win32", arch: "x64" })).toBe("texlab-x86_64-windows.zip");
+    expect(assetFor({ platform: "darwin", arch: "arm64" })).toBe("texlab-aarch64-macos.tar.gz");
+    expect(assetFor({ platform: "linux", arch: "x64" })).toBe("texlab-x86_64-linux.tar.gz");
+    expect(assetFor({ platform: "aix", arch: "ppc64" })).toBeNull();
+  });
+  it("records that the source publishes no checksums", () => {
+    // Texlab attaches no .sha256 sidecar to its releases. Stating it keeps the
+    // gap visible rather than letting the installer skip a step by accident.
+    expect(managedServer.checksum).toBe("none");
   });
 });
 

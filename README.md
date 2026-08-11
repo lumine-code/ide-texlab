@@ -6,7 +6,8 @@ Registers the [texlab](https://github.com/latex-lsp/texlab) language server with
 
 ## Features
 
-- **PATH discovery**: finds `texlab` on your PATH, or uses the Server Path setting.
+- **Server discovery**: uses the Server Path setting, a copy the editor installed for you, or `texlab` on your PATH, in that order.
+- **Managed install**: downloads texlab from its GitHub releases and keeps it current.
 - **LaTeX and BibTeX**: serves the LaTeX grammars (including Beamer and memoir) and BibTeX files.
 - **Formatting**: chooses between the built-in formatter, `latexindent` and `tex-fmt` for `.tex` and `.bib` separately, with the line length and latexindent's own options alongside.
 - **ChkTeX**: runs the style checker on open, on save, or as you type, with your own arguments.
