@@ -60,65 +60,76 @@
     "features": {
       "title": "Features",
       "description": "Which parts of Texlab the editor uses. Turning one off hands it to the next server serving the same file. Only what Texlab implements is listed: it has no signature help, code actions, code lens or semantic tokens.",
+      "scopeResolution": "grammar",
       "type": "object",
       "properties": {
         "diagnostics": {
           "title": "Diagnostics",
           "description": "Report the build log and ChkTeX findings in the linter.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "autocomplete": {
           "title": "Autocomplete",
           "description": "Offer commands, environments, citations and labels while typing.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "hover": {
           "title": "Hover",
           "description": "Show package documentation, citations and label targets on hover.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "definition": {
           "title": "Go To Definition",
           "description": "Jump from a citation or reference to what it points at.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "references": {
           "title": "Find References",
           "description": "List the uses of a label, citation key or command.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "symbols": {
           "title": "Symbols",
           "description": "Serve document and project symbols to go-to-symbol.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "outline": {
           "title": "Outline",
           "description": "Fill the outline panel with the document's sections and environments.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "format": {
           "title": "Format",
           "description": "Format documents with the formatter chosen below.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "rename": {
           "title": "Rename",
           "description": "Rename a label or citation key across the project.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         },
         "inlayHints": {
           "title": "Inlay Hints",
           "description": "Show what a label points at, inline beside it.",
+          "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
         }
