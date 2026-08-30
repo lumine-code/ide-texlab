@@ -139,7 +139,6 @@ describe("ide-texlab adapter", () => {
       "definition",
       "references",
       "symbols",
-      "outline",
       "format",
       "rename",
       "inlayHints",
