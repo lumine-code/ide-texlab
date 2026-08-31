@@ -67,6 +67,7 @@ describe("ide-texlab adapter", () => {
     expect(adapter.grammarScopes).toContain("text.tex.latex");
     expect(adapter.grammarScopes).toContain("text.bibtex");
     expect(adapter.settingsKeyPaths).toEqual(["ide-texlab"]);
+    expect(adapter.restartKeyPaths).toEqual(["ide-texlab.serverPath"]);
   });
 
   it("answers the texlab section with the options unwrapped", () => {
