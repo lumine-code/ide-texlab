@@ -333,6 +333,31 @@
             "type": "string"
           },
           "default": []
+        }
+      }
+    },
+    "symbols": {
+      "title": "Symbols",
+      "description": "Which symbols reach the outline and go-to-symbol. The patterns are regular expressions matched against the symbol name.",
+      "type": "object",
+      "properties": {
+        "allowedPatterns": {
+          "title": "Allowed Patterns",
+          "description": "Serve only the symbols matching one of these.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "ignoredPatterns": {
+          "title": "Ignored Patterns",
+          "description": "Never serve a symbol matching one of these.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
         },
         "customEnvironments": {
           "title": "Custom Environments",
@@ -360,31 +385,6 @@
                 "default": true
               }
             }
-          },
-          "default": []
-        }
-      }
-    },
-    "symbols": {
-      "title": "Symbols",
-      "description": "Which symbols reach the outline and go-to-symbol. The patterns are regular expressions matched against the symbol name.",
-      "type": "object",
-      "properties": {
-        "allowedPatterns": {
-          "title": "Allowed Patterns",
-          "description": "Serve only the symbols matching one of these.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": []
-        },
-        "ignoredPatterns": {
-          "title": "Ignored Patterns",
-          "description": "Never serve a symbol matching one of these.",
-          "type": "array",
-          "items": {
-            "type": "string"
           },
           "default": []
         }

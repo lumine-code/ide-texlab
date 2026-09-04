@@ -107,9 +107,11 @@ describe("ide-texlab adapter", () => {
     expect(options.forwardSearch.args).toBeUndefined();
     expect(options.latexindent.local).toBeUndefined();
     expect(options.build.filename).toBeUndefined();
-    // Zero is how the settings page spells "no limit", which Texlab spells as
-    // an absent value.
-    expect(options.inlayHints.maxLength).toBeUndefined();
+  });
+
+  it("passes zero-valued limits and delays through to Texlab", () => {
+    // Texlab treats zero as the explicit "no limit" value for inlay hints.
+    expect(adapter.getWorkspaceConfiguration("texlab").inlayHints.maxLength).toBe(0);
     lumine.config.set("ide-texlab.formatterLineLength", 0);
     lumine.config.set("ide-texlab.diagnosticsDelay", 0);
     expect(adapter.getWorkspaceConfiguration("texlab").formatterLineLength).toBe(0);
@@ -146,6 +148,10 @@ describe("ide-texlab adapter", () => {
   });
 
   it("maps current project-detection, symbol and label-prefix settings", () => {
+    const { configSchema } = require("../package.json");
+    expect(configSchema.symbols.properties.customEnvironments).toBeDefined();
+    expect(configSchema.diagnostics.properties.customEnvironments).toBeUndefined();
+
     lumine.config.set("ide-texlab.build.useFileList", true);
     lumine.config.set("ide-texlab.symbols.customEnvironments", [
       { name: "theorem", displayName: "Theorem", label: true },
