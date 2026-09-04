@@ -42,7 +42,8 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^18.3.0",
     "globals": "^17.11.0",
-    "prettier": "^3.9.6"
+    "prettier": "^3.9.6",
+    "vscode-jsonrpc": "^9.0.2"
   },
   "configSchema": {
     "serverPath": {
@@ -136,6 +137,12 @@
         "onSave": {
           "title": "Build On Save",
           "description": "Compile the document every time it is saved.",
+          "type": "boolean",
+          "default": false
+        },
+        "useFileList": {
+          "title": "Use File List",
+          "description": "Use the TeX engine's `.fls` output as another source for project detection. This can improve multi-file discovery at a performance cost.",
           "type": "boolean",
           "default": false
         },
@@ -326,6 +333,35 @@
             "type": "string"
           },
           "default": []
+        },
+        "customEnvironments": {
+          "title": "Custom Environments",
+          "description": "Additional environments to include in document symbols.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "title": "Name",
+                "description": "LaTeX environment name.",
+                "type": "string",
+                "default": ""
+              },
+              "displayName": {
+                "title": "Display Name",
+                "description": "Optional name shown in the outline.",
+                "type": "string",
+                "default": ""
+              },
+              "label": {
+                "title": "Append Label",
+                "description": "Append the matching label number to the symbol.",
+                "type": "boolean",
+                "default": true
+              }
+            }
+          },
+          "default": []
         }
       }
     },
@@ -498,6 +534,30 @@
           "type": "array",
           "items": {
             "type": "string"
+          },
+          "default": []
+        },
+        "labelDefinitionPrefixes": {
+          "title": "Label Definition Prefixes",
+          "description": "Pairs of a custom label-definition command and the prefix it adds.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "default": []
+        },
+        "labelReferencePrefixes": {
+          "title": "Label Reference Prefixes",
+          "description": "Pairs of a custom label-reference command and the prefix it adds.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "default": []
         }

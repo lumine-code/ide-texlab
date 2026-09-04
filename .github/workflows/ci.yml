@@ -49,6 +49,8 @@ jobs:
     timeout-minutes: 60
     env:
       LUMINE_JASMINE_REPORTER: list
+      TEXLAB_VERSION: 5.26.0
+      TEXLAB_SHA256: 8697bd5e479d4584b14b7eed5c320c80ec4e1d91ebefbb6801e6bf38e9971300
     steps:
       - uses: actions/checkout@v6
         with:
@@ -73,6 +75,15 @@ jobs:
       # no ssh key, so rewrite them to anonymous HTTPS (the forks are public).
       - name: Use HTTPS for GitHub git dependencies
         run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+      - name: Install Texlab
+        working-directory: ide-texlab
+        run: |
+          asset="texlab-x86_64-linux.tar.gz"
+          curl -fsSLO "https://github.com/latex-lsp/texlab/releases/download/v${TEXLAB_VERSION}/${asset}"
+          echo "${TEXLAB_SHA256}  ${asset}" | sha256sum --check -
+          mkdir .server
+          tar -xzf "${asset}" -C .server
+          echo "$PWD/.server" >> "$GITHUB_PATH"
       - name: Install package dependencies
         working-directory: ide-texlab
         run: npm ci --ignore-scripts

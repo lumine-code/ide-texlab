@@ -93,6 +93,7 @@ describe("ide-texlab adapter", () => {
     expect(options.build.args).toEqual(["-pdf", "-interaction=nonstopmode", "-synctex=1", "%f"]);
     // latex-tools already compiles on save; both on would compile twice.
     expect(options.build.onSave).toBe(false);
+    expect(options.build.useFileList).toBe(false);
     expect(options.latexFormatter).toBe("latexindent");
     expect(options.bibtexFormatter).toBe("texlab");
     expect(options.formatterLineLength).toBe(80);
@@ -110,7 +111,9 @@ describe("ide-texlab adapter", () => {
     // an absent value.
     expect(options.inlayHints.maxLength).toBeUndefined();
     lumine.config.set("ide-texlab.formatterLineLength", 0);
-    expect(adapter.getWorkspaceConfiguration("texlab").formatterLineLength).toBeUndefined();
+    lumine.config.set("ide-texlab.diagnosticsDelay", 0);
+    expect(adapter.getWorkspaceConfiguration("texlab").formatterLineLength).toBe(0);
+    expect(adapter.getWorkspaceConfiguration("texlab").diagnosticsDelay).toBe(0);
   });
 
   it("drops a pattern that will not compile", () => {
@@ -126,6 +129,37 @@ describe("ide-texlab adapter", () => {
     expect(lumine.notifications.addWarning.calls.mostRecent().args[0]).toContain(
       "ide-texlab.symbols.ignoredPatterns",
     );
+  });
+
+  it("drops look-around and backreferences that Texlab's Rust regex cannot compile", () => {
+    spyOn(lumine.notifications, "addWarning");
+    lumine.config.set("ide-texlab.diagnostics.allowedPatterns", [
+      "^plain$",
+      "(?=lookahead)lookahead",
+      "(capture)\\1",
+    ]);
+
+    expect(adapter.getWorkspaceConfiguration("texlab").diagnostics.allowedPatterns).toEqual([
+      "^plain$",
+    ]);
+    expect(lumine.notifications.addWarning).toHaveBeenCalledTimes(2);
+  });
+
+  it("maps current project-detection, symbol and label-prefix settings", () => {
+    lumine.config.set("ide-texlab.build.useFileList", true);
+    lumine.config.set("ide-texlab.symbols.customEnvironments", [
+      { name: "theorem", displayName: "Theorem", label: true },
+    ]);
+    lumine.config.set("ide-texlab.experimental.labelDefinitionPrefixes", [["thm", "thm:"]]);
+    lumine.config.set("ide-texlab.experimental.labelReferencePrefixes", [["thmref", "thm:"]]);
+
+    const options = adapter.getWorkspaceConfiguration("texlab");
+    expect(options.build.useFileList).toBe(true);
+    expect(options.symbols.customEnvironments).toEqual([
+      { name: "theorem", displayName: "Theorem", label: true },
+    ]);
+    expect(options.experimental.labelDefinitionPrefixes).toEqual([["thm", "thm:"]]);
+    expect(options.experimental.labelReferencePrefixes).toEqual([["thmref", "thm:"]]);
   });
 
   it("offers a switch only for what Texlab advertises", () => {
