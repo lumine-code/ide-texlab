@@ -18,7 +18,9 @@ Registers the [texlab](https://github.com/latex-lsp/texlab) language server with
 
 ## Installation
 
-Install `ide-client` first, then search for `ide-texlab` in the Install pane of the Lumine settings, or run `lumine --install lumine-code/ide-texlab`. You can provide the `texlab` binary from a TeX distribution or package manager, or let the editor fetch it from Manage Servers.
+To install `ide-texlab` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-texlab`.
+
+Install `ide-client` first. You can provide the `texlab` binary from a TeX distribution or package manager, or let the editor fetch it from Manage Servers.
 
 ## Services
 
