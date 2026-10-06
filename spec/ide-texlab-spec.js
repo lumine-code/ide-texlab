@@ -78,7 +78,7 @@ describe("ide-texlab adapter", () => {
     lumine.config.set("ide-texlab.build.executable", "tectonic");
     lumine.config.set("ide-texlab.chktex.onEdit", true);
 
-    const options = adapter.getWorkspaceConfiguration("texlab");
+    const options = adapter.getSettings().texlab;
     expect(options.latexFormatter).toBe("tex-fmt");
     expect(options.build.executable).toBe("tectonic");
     expect(options.chktex.onEdit).toBe(true);
@@ -88,7 +88,7 @@ describe("ide-texlab adapter", () => {
   });
 
   it("passes the build and formatter defaults through", () => {
-    const options = adapter.getWorkspaceConfiguration("texlab");
+    const options = adapter.getSettings().texlab;
     expect(options.build.executable).toBe("latexmk");
     expect(options.build.args).toEqual(["-pdf", "-interaction=nonstopmode", "-synctex=1", "%f"]);
     // latex-tools already compiles on save; both on would compile twice.
@@ -102,7 +102,7 @@ describe("ide-texlab adapter", () => {
   });
 
   it("omits an unset value rather than sending an empty one", () => {
-    const options = adapter.getWorkspaceConfiguration("texlab");
+    const options = adapter.getSettings().texlab;
     expect(options.forwardSearch.executable).toBeUndefined();
     expect(options.forwardSearch.args).toBeUndefined();
     expect(options.latexindent.local).toBeUndefined();
@@ -111,11 +111,11 @@ describe("ide-texlab adapter", () => {
 
   it("passes zero-valued limits and delays through to Texlab", () => {
     // Texlab treats zero as the explicit "no limit" value for inlay hints.
-    expect(adapter.getWorkspaceConfiguration("texlab").inlayHints.maxLength).toBe(0);
+    expect(adapter.getSettings().texlab.inlayHints.maxLength).toBe(0);
     lumine.config.set("ide-texlab.formatterLineLength", 0);
     lumine.config.set("ide-texlab.diagnosticsDelay", 0);
-    expect(adapter.getWorkspaceConfiguration("texlab").formatterLineLength).toBe(0);
-    expect(adapter.getWorkspaceConfiguration("texlab").diagnosticsDelay).toBe(0);
+    expect(adapter.getSettings().texlab.formatterLineLength).toBe(0);
+    expect(adapter.getSettings().texlab.diagnosticsDelay).toBe(0);
   });
 
   it("drops a pattern that will not compile", () => {
@@ -125,7 +125,7 @@ describe("ide-texlab adapter", () => {
     spyOn(lumine.notifications, "addWarning");
     lumine.config.set("ide-texlab.symbols.ignoredPatterns", ["^ok$", "(unbalanced"]);
 
-    const options = adapter.getWorkspaceConfiguration("texlab");
+    const options = adapter.getSettings().texlab;
     expect(options.symbols.ignoredPatterns).toEqual(["^ok$"]);
     expect(lumine.notifications.addWarning).toHaveBeenCalled();
     expect(lumine.notifications.addWarning.calls.mostRecent().args[0]).toContain(
@@ -141,9 +141,7 @@ describe("ide-texlab adapter", () => {
       "(capture)\\1",
     ]);
 
-    expect(adapter.getWorkspaceConfiguration("texlab").diagnostics.allowedPatterns).toEqual([
-      "^plain$",
-    ]);
+    expect(adapter.getSettings().texlab.diagnostics.allowedPatterns).toEqual(["^plain$"]);
     expect(lumine.notifications.addWarning).toHaveBeenCalledTimes(2);
   });
 
@@ -159,7 +157,7 @@ describe("ide-texlab adapter", () => {
     lumine.config.set("ide-texlab.experimental.labelDefinitionPrefixes", [["thm", "thm:"]]);
     lumine.config.set("ide-texlab.experimental.labelReferencePrefixes", [["thmref", "thm:"]]);
 
-    const options = adapter.getWorkspaceConfiguration("texlab");
+    const options = adapter.getSettings().texlab;
     expect(options.build.useFileList).toBe(true);
     expect(options.symbols.customEnvironments).toEqual([
       { name: "theorem", displayName: "Theorem", label: true },
