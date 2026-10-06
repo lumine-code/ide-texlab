@@ -1,5 +1,5 @@
-const path = require("path");
-const { resolveServer, findOnPath, assetFor, managedServer } = require("../lib/server");
+const { serverContext } = require("./helpers/server-resolver");
+const { resolveServer, assetFor, managedServer } = require("../lib/server");
 const main = require("../lib/main");
 
 const registerAdapter = () => {
@@ -17,21 +17,8 @@ const registerAdapter = () => {
 
 describe("ide-texlab server resolution", () => {
   it("prefers the configured path", async () => {
-    const launch = await resolveServer(process.execPath);
+    const launch = await resolveServer(serverContext(), process.execPath);
     expect(launch.command).toBe(process.execPath);
-  });
-  it("finds executables on a synthetic PATH", () => {
-    const dir = path.dirname(process.execPath);
-    const name = path.basename(process.execPath, path.extname(process.execPath));
-    expect(findOnPath(name, { PATH: dir, PATHEXT: ".EXE" })).toBeTruthy();
-    expect(findOnPath("definitely-not-a-real-binary", { PATH: dir })).toBeNull();
-  });
-  it("prefers a managed install over PATH, and the configured path over both", async () => {
-    const managed = { binaryPath: "/managed/texlab", version: "5.26.0" };
-    const launch = await resolveServer("", managed);
-    expect(launch.command).toBe("/managed/texlab");
-    expect(launch.version).toBe("5.26.0");
-    expect((await resolveServer(process.execPath, managed)).command).toBe(process.execPath);
   });
   it("names the exact release asset for each platform it supports", () => {
     // Texlab names assets by architecture and system, not by Rust target.

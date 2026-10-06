@@ -2,7 +2,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const main = require("../lib/main");
-const { findOnPath } = require("../lib/server");
+const { findOnPath } = require("./helpers/server-resolver");
 const { LiveLspClient, fileUri } = require("./helpers/live-lsp-client");
 
 const serverPath = process.env.TEXLAB_PATH || findOnPath("texlab");
