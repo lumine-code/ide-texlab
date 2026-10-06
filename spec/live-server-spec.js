@@ -21,7 +21,7 @@ liveSuite("ide-texlab official server", () => {
     lumine.config.set("ide-texlab.serverPath", serverPath);
     lumine.config.set("ide-texlab.diagnosticsDelay", 0);
     lumine.config.set("ide-texlab.latexFormatter", "none");
-    disposable = main.consumeIdeClient({
+    disposable = main.consumeIde({
       registerAdapter(registered) {
         adapter = registered;
         return { dispose() {} };

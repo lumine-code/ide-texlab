@@ -2,7 +2,7 @@
 
 Texlab language-server adapter for LaTeX.
 
-Registers the [texlab](https://github.com/latex-lsp/texlab) language server with `ide-client`, providing completions, diagnostics, navigation, and formatting for LaTeX and BibTeX documents.
+Registers the [texlab](https://github.com/latex-lsp/texlab) language server with `ide`, providing completions, diagnostics, navigation, and formatting for LaTeX and BibTeX documents.
 
 ## Features
 
@@ -20,11 +20,11 @@ Registers the [texlab](https://github.com/latex-lsp/texlab) language server with
 
 To install `ide-texlab` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-texlab`.
 
-Install `ide-client` first. You can provide the `texlab` binary from a TeX distribution or package manager, or let the editor fetch it from Manage Servers.
+Install `ide` first. You can provide the `texlab` binary from a TeX distribution or package manager, or let the editor fetch it from Manage Servers.
 
 ## Services
 
-- `ide-client`: consumed to register the Texlab adapter with the editor's language-server client.
+- `ide`: consumed to register the Texlab adapter with the editor's language-server client.
 
 ## Contributing
 
