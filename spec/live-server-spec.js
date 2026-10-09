@@ -1,7 +1,6 @@
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const main = require("../lib/main");
 const { findOnPath } = require("./helpers/server-resolver");
 const { LiveLspClient, fileUri } = require("./helpers/live-lsp-client");
 
@@ -9,15 +8,18 @@ const serverPath = process.env.TEXLAB_PATH || findOnPath("texlab");
 const liveSuite = serverPath ? describe : () => {};
 
 liveSuite("ide-texlab official server", () => {
-  let adapter, client, disposable, rootPath;
+  let adapter, client, disposable, rootPath, main;
   let originalTimeout;
 
   beforeEach(async () => {
+    for (const method of ["openExternal", "openPath", "showItemInFolder", "openApplication"])
+      spyOn(lumine.shell, method).and.returnValue(Promise.resolve());
+    spyOn(lumine.application, "openWindow").and.returnValue(Promise.resolve());
     jasmine.useRealClock();
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-    rootPath = fs.mkdtempSync(path.join(os.tmpdir(), "ide-texlab-live-"));
-    await lumine.packages.activatePackage("ide-texlab");
+    rootPath = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "ide-texlab-live-")));
+    main = (await lumine.packages.activatePackage("ide-texlab")).mainModule;
     lumine.config.set("ide-texlab.serverPath", serverPath);
     lumine.config.set("ide-texlab.diagnosticsDelay", 0);
     lumine.config.set("ide-texlab.latexFormatter", "none");
@@ -34,9 +36,23 @@ liveSuite("ide-texlab official server", () => {
   afterEach(async () => {
     await client.stop();
     disposable.dispose();
-    for (const key of ["serverPath", "diagnosticsDelay", "latexFormatter"])
+    for (const key of [
+      "serverPath",
+      "diagnosticsDelay",
+      "latexFormatter",
+      "diagnostics.allowedPatterns",
+      "symbols.ignoredPatterns",
+    ])
       lumine.config.unset(`ide-texlab.${key}`);
     await lumine.packages.deactivatePackage("ide-texlab");
+    const relative = path.relative(fs.realpathSync(os.tmpdir()), fs.realpathSync(rootPath));
+    if (
+      !relative ||
+      relative === ".." ||
+      relative.startsWith(`..${path.sep}`) ||
+      path.isAbsolute(relative)
+    )
+      throw new Error("Texlab fixture cleanup must remain inside its owned temporary directory.");
     fs.rmSync(rootPath, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
@@ -84,5 +100,31 @@ liveSuite("ide-texlab official server", () => {
       options: { tabSize: 2, insertSpaces: true },
     });
     expect(edits[0].newText).toContain("title = {Title}");
+  });
+
+  it("uses Rust flags, verbose comments and dotted capture names in server filters", async () => {
+    lumine.config.set("ide-texlab.diagnostics.allowedPatterns", ["(?x)^Duplicate\\x20#(\nlabel$"]);
+    lumine.config.set("ide-texlab.symbols.ignoredPatterns", ["(?i)(?P<name.part>^intro$)"]);
+    await client.start();
+    const uri = fileUri(path.join(rootPath, "filters.tex"));
+    client.open(
+      uri,
+      "latex",
+      "\\documentclass{article}\n\\begin{document}\n\\section{Intro}\n\\label{dup}\n\\label{dup}\n\\ref{missing}\n\\section{Keep}\n\\end{document}\n",
+    );
+    const diagnostics = await client.waitFor(
+      () =>
+        client
+          .messages("textDocument/publishDiagnostics")
+          .find(({ params }) =>
+            params.diagnostics.some(({ message }) => message === "Duplicate label"),
+          )?.params.diagnostics,
+      "Rust-filtered duplicate-label diagnostics",
+    );
+    expect(diagnostics.every(({ message }) => message === "Duplicate label")).toBeTrue();
+    const symbols = await client.request("textDocument/documentSymbol", {
+      textDocument: { uri },
+    });
+    expect(symbols.map(({ name }) => name)).toEqual(["Keep"]);
   });
 });
