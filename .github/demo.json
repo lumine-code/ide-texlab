@@ -1,0 +1,16 @@
+{
+  "title": "ide-texlab",
+  "description": "Texlab identifies a mismatched LaTeX environment.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "2ef531d3f93ffd17acf98ce688385453d679a0cc",
+  "mode": "normal",
+  "fontSettings": "default",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Texlab identifies a mismatched LaTeX environment.",
+      "width": 1100,
+      "height": 490
+    }
+  ]
+}

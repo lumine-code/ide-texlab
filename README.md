@@ -16,6 +16,8 @@ Registers the [texlab](https://github.com/latex-lsp/texlab) language server with
 - **Feature switches**: any of the ten capabilities Texlab serves can be turned off, which hands it to another server on the same file.
 - **Project sessions**: one server per project root, started lazily with the first matching editor.
 
+![Texlab identifies a mismatched LaTeX environment.](.github/demo.png)
+
 ## Installation
 
 To install `ide-texlab` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-texlab`.
