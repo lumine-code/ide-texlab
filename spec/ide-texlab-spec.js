@@ -57,7 +57,7 @@ describe("ide-texlab adapter", () => {
     expect(adapter.restartKeyPaths).toEqual(["ide-texlab.serverPath"]);
   });
 
-  it("answers the texlab section with the options unwrapped", () => {
+  it("answers the texlab section with the options unwrapped", async () => {
     // Texlab pulls `texlab` and parses the answer as its options directly, so
     // wrapping them would leave every setting at its default — which is what
     // reading a Lumine namespace called `texlab` used to do.
@@ -65,17 +65,17 @@ describe("ide-texlab adapter", () => {
     lumine.config.set("ide-texlab.build.executable", "tectonic");
     lumine.config.set("ide-texlab.chktex.onEdit", true);
 
-    const options = adapter.getSettings().texlab;
+    const options = (await adapter.getSettings()).texlab;
     expect(options.latexFormatter).toBe("tex-fmt");
     expect(options.build.executable).toBe("tectonic");
     expect(options.chktex.onEdit).toBe(true);
     expect(options.texlab).toBeUndefined();
     // The push carries the same options, under the section name.
-    expect(adapter.getSettings().texlab.build.executable).toBe("tectonic");
+    expect((await adapter.getSettings()).texlab.build.executable).toBe("tectonic");
   });
 
-  it("passes the build and formatter defaults through", () => {
-    const options = adapter.getSettings().texlab;
+  it("passes the build and formatter defaults through", async () => {
+    const options = (await adapter.getSettings()).texlab;
     expect(options.build.executable).toBe("latexmk");
     expect(options.build.args).toEqual(["-pdf", "-interaction=nonstopmode", "-synctex=1", "%f"]);
     // latex-tools already compiles on save; both on would compile twice.
@@ -88,31 +88,31 @@ describe("ide-texlab adapter", () => {
     expect(options.hover.symbols).toBe("image");
   });
 
-  it("omits an unset value rather than sending an empty one", () => {
-    const options = adapter.getSettings().texlab;
+  it("omits an unset value rather than sending an empty one", async () => {
+    const options = (await adapter.getSettings()).texlab;
     expect(options.forwardSearch.executable).toBeUndefined();
     expect(options.forwardSearch.args).toBeUndefined();
     expect(options.latexindent.local).toBeUndefined();
     expect(options.build.filename).toBeUndefined();
   });
 
-  it("passes zero-valued limits and delays through to Texlab", () => {
+  it("passes zero-valued limits and delays through to Texlab", async () => {
     // Texlab treats zero as the explicit "no limit" value for inlay hints.
-    expect(adapter.getSettings().texlab.inlayHints.maxLength).toBe(0);
+    expect((await adapter.getSettings()).texlab.inlayHints.maxLength).toBe(0);
     lumine.config.set("ide-texlab.formatterLineLength", 0);
     lumine.config.set("ide-texlab.diagnosticsDelay", 0);
-    expect(adapter.getSettings().texlab.formatterLineLength).toBe(0);
-    expect(adapter.getSettings().texlab.diagnosticsDelay).toBe(0);
+    expect((await adapter.getSettings()).texlab.formatterLineLength).toBe(0);
+    expect((await adapter.getSettings()).texlab.diagnosticsDelay).toBe(0);
   });
 
-  it("drops a pattern that will not compile", () => {
+  it("drops a pattern that will not compile", async () => {
     // Texlab unwraps the parse of the configuration it pulled, so one bad
     // pattern takes down the thread that read it — silently, leaving every
     // filter apparently ignored.
     spyOn(lumine.notifications, "addWarning");
     lumine.config.set("ide-texlab.symbols.ignoredPatterns", ["^ok$", "(unbalanced"]);
 
-    const options = adapter.getSettings().texlab;
+    const options = (await adapter.getSettings()).texlab;
     expect(options.symbols.ignoredPatterns).toEqual(["^ok$"]);
     expect(lumine.notifications.addWarning).toHaveBeenCalled();
     expect(lumine.notifications.addWarning.calls.mostRecent().args[0]).toContain(
@@ -120,7 +120,7 @@ describe("ide-texlab adapter", () => {
     );
   });
 
-  it("drops look-around and backreferences that Texlab's Rust regex cannot compile", () => {
+  it("drops look-around and backreferences that Texlab's Rust regex cannot compile", async () => {
     spyOn(lumine.notifications, "addWarning");
     lumine.config.set("ide-texlab.diagnostics.allowedPatterns", [
       "^plain$",
@@ -128,11 +128,11 @@ describe("ide-texlab adapter", () => {
       "(capture)\\1",
     ]);
 
-    expect(adapter.getSettings().texlab.diagnostics.allowedPatterns).toEqual(["^plain$"]);
+    expect((await adapter.getSettings()).texlab.diagnostics.allowedPatterns).toEqual(["^plain$"]);
     expect(lumine.notifications.addWarning).toHaveBeenCalledTimes(2);
   });
 
-  it("maps current project-detection, symbol and label-prefix settings", () => {
+  it("maps current project-detection, symbol and label-prefix settings", async () => {
     const { configSchema } = require("../package.json");
     expect(configSchema.symbols.properties.customEnvironments).toBeDefined();
     expect(configSchema.diagnostics.properties.customEnvironments).toBeUndefined();
@@ -144,7 +144,7 @@ describe("ide-texlab adapter", () => {
     lumine.config.set("ide-texlab.experimental.labelDefinitionPrefixes", [["thm", "thm:"]]);
     lumine.config.set("ide-texlab.experimental.labelReferencePrefixes", [["thmref", "thm:"]]);
 
-    const options = adapter.getSettings().texlab;
+    const options = (await adapter.getSettings()).texlab;
     expect(options.build.useFileList).toBe(true);
     expect(options.symbols.customEnvironments).toEqual([
       { name: "theorem", displayName: "Theorem", label: true },

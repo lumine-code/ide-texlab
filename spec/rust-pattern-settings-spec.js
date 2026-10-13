@@ -27,7 +27,7 @@ describe("Texlab Rust pattern settings through the IDE service", () => {
     }
   });
 
-  it("forwards Rust inline flags and Python-style named captures unchanged", () => {
+  it("forwards Rust inline flags and Python-style named captures unchanged", async () => {
     const patterns = [
       "(?i)warning",
       "(?im:^warning$)",
@@ -41,7 +41,7 @@ describe("Texlab Rust pattern settings through the IDE service", () => {
       "^ordinary$",
     ];
     for (const field of fields) lumine.config.set(`ide-texlab.${field}`, patterns);
-    const { texlab } = adapter.getSettings();
+    const { texlab } = await adapter.getSettings();
     for (const group of [texlab.diagnostics, texlab.symbols]) {
       expect(group.allowedPatterns).toEqual(patterns);
       expect(group.ignoredPatterns).toEqual(patterns);
@@ -49,7 +49,7 @@ describe("Texlab Rust pattern settings through the IDE service", () => {
     expect(lumine.notifications.addWarning).not.toHaveBeenCalled();
   });
 
-  it("still rejects malformed groups, unsupported flags, lookaround and backreferences", () => {
+  it("still rejects malformed groups, unsupported flags, lookaround and backreferences", async () => {
     const patterns = [
       "(?i:unbalanced",
       "(?g)unknown",
@@ -59,7 +59,7 @@ describe("Texlab Rust pattern settings through the IDE service", () => {
       "[",
     ];
     lumine.config.set("ide-texlab.diagnostics.allowedPatterns", patterns);
-    expect(adapter.getSettings().texlab.diagnostics.allowedPatterns).toEqual([]);
+    expect((await adapter.getSettings()).texlab.diagnostics.allowedPatterns).toEqual([]);
     expect(lumine.notifications.addWarning).toHaveBeenCalledTimes(patterns.length);
   });
 });
