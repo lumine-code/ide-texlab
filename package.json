@@ -21,7 +21,8 @@
   "main": "./lib/main",
   "files": [
     "lib",
-    "spec"
+    "spec",
+    "THIRD_PARTY_NOTICES"
   ],
   "specPackages": [
     "ide"
